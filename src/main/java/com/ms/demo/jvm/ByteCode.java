@@ -10,10 +10,15 @@ public class ByteCode {
 
     public void setUserName(String userName) {
         this.userName = userName;
+        test();
+    }
+
+    public void test(){
+        System.out.println(111);
     }
 
     public static void main(String[] args) {
-        new ByteCode();
 
     }
+
 }
