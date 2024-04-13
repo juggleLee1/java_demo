@@ -245,3 +245,23 @@ public ClassLoader getClassLoader() {
 
 ## 字符串常量池
 
+* JDK6, 字符串常量池放在方法区；JDK7及以后，放在堆空间
+
+```java
+String str = "lee";  // 创建一个字面量，放在堆中间，常量池的hashtable直接引用这个字面量
+// 底层指令
+0 ldc #2 <lee>
+2 astore_1
+3 return
+
+String str = new String("lee");  // 首先创建一个字面量，常量池引用这个字面量。然后执行new方法另外分配一个变量
+// 底层指令
+ 0 new #2 <java/lang/String>
+ 3 dup
+ 4 ldc #3 <lee>
+ 6 invokespecial #4 <java/lang/String.<init> : (Ljava/lang/String;)V>
+ 9 astore_1
+10 return
+```
+
+* intern方法，将String对象对应的字符串放入常量池中，如果字符串常量池包含这种引用，则直接返回这个字符串常量池引用的那个对象，如果不存在，则在常量池中增加一个引用，指向这个对象
