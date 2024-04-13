@@ -226,3 +226,22 @@ public ClassLoader getClassLoader() {
   * 对象年龄应该设置多少合适：
     * 如果对象的生命周期出现严重的不平衡，有大量生命周期非常低的对象A，也有大量生命周期非常高的对象B，此时需要把对象年龄设置到比A稍微高一点
     * 大数据高并发应用，此时需要将对象年龄设高一点，避免数据进去老年代，频繁Full GC
+
+## CMS垃圾回收器
+
+* 适用区域：老年代
+* 流程：初始标记（stw） ->  并发标记  ->  最终标记（stw）->  垃圾清除  -> 标记重置
+* 使用 ParNew + CMS 垃圾回收器，除了要防止频繁full gc 之外，还需要注意并发标记和并发清除阶段的内存爆满导致回退到serial垃圾回收器
+
+## G1垃圾回收器
+
+* G1之Minor GC：G1会计算下现在Eden区回收大概要多久时间，如果回收时 间远远小于参数 -XX:MaxGCPauseMills 设定的值，那么增加年轻代的region，继续给新对象存放，不会马上做Young GC，直到下一次Eden区放满，G1计算回收时间接近参数 -XX:MaxGCPauseMills 设定的值，那么就会触发Young GC
+* G1之Mixed GC：老年代的堆占有率达到参数(-XX:InitiatingHeapOccupancyPercent)设定的值则触发，回收所有的 Young和部分Old(根据期望的GC停顿时间确定old区垃圾收集的优先顺序)以及大对象区，正常情况G1的垃圾收集是先做 MixedGC，主要使用复制算法，需要把各个region中存活的对象拷贝到别的region里去，拷贝过程中如果发现没有足够 的空region能够承载拷贝对象就会触发一次Full GC
+  * Mixed GC 也会考虑XX:MaxGCPauseMills的值，选择性回收区域
+* Full GC ：停止系统程序，然后采用单线程进行标记、清理和压缩整理，好空闲出来一批Region来供下一次MixedGC使用，这 个过程是非常耗时的。
+
+* Mixed GC ：标记开始（stw） -> 并发标记 -> 最终标记（stw）-> 筛选回收（可以分几次进行, stw）
+* G1调优的宗旨是：尽量减少Mixed GC，禁止Full GC
+
+## 字符串常量池
+

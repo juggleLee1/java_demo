@@ -14,9 +14,7 @@ import java.util.function.Predicate;
  * @create 2024/4/8 19:22
  */
 public class algorithmTest {
-    public static void main(String[] args) {
 
-    }
 
     // lc 27题
     public static int removeElement(int[] nums, int val) {
@@ -150,6 +148,101 @@ public class algorithmTest {
         }
 
         return list;
+    }
+
+    /***
+     * 冒泡排序
+     * @param
+     */
+    public void bubbleSort(int[] list, Comparator<Integer> comparator) {
+        int temp;
+        boolean flag;
+        for (int i = 0; i < list.length - 1; i++) {
+            flag = true;
+            for (int j = 0; j < list.length - i - 1; j++) {
+                if (comparator.compare(list[j], list[j + 1]) > 0) {
+                    temp = list[j];
+                    list[j] = list[j + 1];
+                    list[j + 1] = temp;
+                    flag = false;
+                }
+            }
+            if (flag) break;
+        }
+    }
+
+    /**
+     * 快速排序
+     * @param list
+     * @param start
+     * @param end
+     * @param comparator
+     */
+    public void quickSort(int[] list, int start, int end, Comparator<Integer> comparator) {
+        if (start < end) {
+            int pivot = list[start];
+            int i = start, j = end;
+            while (i < j) {
+                while (i < j && comparator.compare(list[j], pivot) > 0) j--;
+                if (i < j) list[i++] = list[j];
+
+                while (i < j && comparator.compare(pivot, list[i]) >= 0) i++;
+                if (i < j) list[j--] = list[i];
+            }
+            list[i] = pivot;
+
+            quickSort(list, start, i - 1, comparator);
+            quickSort(list, i + 1, end, comparator);
+        }
+    }
+
+
+    /**
+     * 堆排序
+     * @param list
+     * @param comparator
+     */
+    public void heapSort(int[] list, Comparator<Integer> comparator) {
+        for (int i = (list.length >>> 1) - 1; i >= 0; i--) {
+            heapJusify(list, i, list.length, comparator);
+        }
+
+        int temp;
+        for (int i = list.length - 1; i > 0; i--) {
+            temp = list[0];
+            list[0] = list[i];
+            list[i] = temp;
+            heapJusify(list, 0, i, comparator);
+        }
+    }
+
+    private void heapJusify(int[] list, int i, int len, Comparator<Integer> comparator) {
+        int k = 2 * i + 1;
+        int temp = list[i];
+        while (k < len) {
+            if (k + 1 < len && comparator.compare(list[k + 1], list[k]) > 0) k++;
+
+            if (comparator.compare(list[k], temp) > 0) {
+                list[i] = list[k];
+                i = k;
+                k = 2 * i + 1;
+            } else {
+                break;
+            }
+        }
+
+        list[i] = temp;
+    }
+
+    public static void main(String[] args) {
+        algorithmTest algorithmTest = new algorithmTest();
+        int[] arr = {3, 10, 20, 20, 9, 80, 9, 20};
+
+        algorithmTest.heapSort(arr, (num1, num2) -> {
+            return num2 - num1;
+        });
+
+        System.out.println(Arrays.toString(arr));
     }
 }
 
